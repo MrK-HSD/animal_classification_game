@@ -15,10 +15,7 @@
         padding: 20px;
     }
 
-    h1 {
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
+    h1 { font-size: 32px; margin-bottom: 8px; }
 
     #timer, #scoreboard {
         font-size: 22px;
@@ -26,15 +23,15 @@
         margin: 10px 0;
     }
 
+    /* Animal card */
     #animal-card {
         margin: 25px auto;
-        width: 260px;
+        width: 280px;
         background: white;
         padding: 15px;
         border-radius: 12px;
         border: 2px solid #444;
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        cursor: grab;
     }
 
     #animal-image {
@@ -62,19 +59,18 @@
         height: 240px;
         padding: 10px;
         border-radius: 12px;
-        color: white;
         font-weight: 600;
         font-size: 18px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        transition: transform 0.2s ease;
+        color: white;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: transform 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     .category:hover { transform: scale(1.06); }
 
-    /* Color theme */
     .mammal { background: #4A90E2; }
     .bird { background: #F5C542; color:black; }
     .fish { background: #48C9B0; }
@@ -98,19 +94,22 @@
         transition: 0.2s;
     }
 
-    button:hover {
-        background: #3a78c0;
-    }
+    button:hover { background: #3a78c0; }
 
     #leaderboard {
         margin-top: 30px;
         background: white;
         padding: 15px;
         width: 350px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-inline: auto;
         border-radius: 10px;
         border: 2px solid #333;
+    }
+
+    /* Placeholder collage */
+    #placeholder {
+        font-size: 48px;
+        line-height: 1.4;
     }
 </style>
 </head>
@@ -123,11 +122,17 @@
 <div id="timer">Time Left: 60</div>
 <div id="scoreboard">Score: 0</div>
 
+<!-- Animal Card -->
 <div id="animal-card" draggable="true">
-    <img id="animal-image" src="" alt="Animal">
+    <!-- Placeholder collage (6 cute animals) -->
+    <div id="placeholder">🦁 🐘 🐒<br>🐢 🐠 🐸</div>
+
+    <!-- Real game image -->
+    <img id="animal-image" src="" alt="Animal" style="display:none;">
     <p id="animal-name"></p>
 </div>
 
+<!-- Categories -->
 <div id="game-area">
     <div class="category mammal" data-type="Mammal">Mammals</div>
     <div class="category bird" data-type="Bird">Birds</div>
@@ -143,57 +148,56 @@
     <ol id="score-list"></ol>
 </div>
 
-<!-- Soft classroom-friendly sound effects -->
+<!-- Soft sounds -->
 <audio id="correct-sound">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3?filename=correct-2-46134.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3?filename=correct-2-46134.mp3">
 </audio>
 <audio id="incorrect-sound">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_62154420cc.mp3?filename=error-126627.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_62154420cc.mp3?filename=error-126627.mp3">
 </audio>
 
-
 <script>
-/* 30 Cartoon Animals (Color SVGs from OpenMoji CDN) */
+/* 30 animals — cartoon, kid-friendly, CORS-safe */
 const animals = [
     /* Mammals */
-    {name:"Lion",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F981.svg"},
-    {name:"Monkey",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F412.svg"},
-    {name:"Elephant",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F418.svg"},
-    {name:"Giraffe",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F992.svg"},
-    {name:"Dog",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F415.svg"},
-    {name:"Horse",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F434.svg"},
+    {name:"Lion", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F981.svg"},
+    {name:"Monkey", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F412.svg"},
+    {name:"Elephant", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F418.svg"},
+    {name:"Giraffe", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F992.svg"},
+    {name:"Dog", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F415.svg"},
+    {name:"Horse", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F434.svg"},
 
     /* Birds */
-    {name:"Eagle",type:"Bird",img:"https://openmoji.org/data/color/svg/1F985.svg"},
-    {name:"Owl",type:"Bird",img:"https://openmoji.org/data/color/svg/1F989.svg"},
-    {name:"Duck",type:"Bird",img:"https://openmoji.org/data/color/svg/1F986.svg"},
-    {name:"Parrot",type:"Bird",img:"https://openmoji.org/data/color/svg/1F99C.svg"},
-    {name:"Penguin",type:"Bird",img:"https://openmoji.org/data/color/svg/1F427.svg"},
-    {name:"Rooster",type:"Bird",img:"https://openmoji.org/data/color/svg/1F413.svg"},
+    {name:"Eagle", type:"Bird", img:"https://openmoji.org/data/color/svg/1F985.svg"},
+    {name:"Owl", type:"Bird", img:"https://openmoji.org/data/color/svg/1F989.svg"},
+    {name:"Duck", type:"Bird", img:"https://openmoji.org/data/color/svg/1F986.svg"},
+    {name:"Parrot", type:"Bird", img:"https://openmoji.org/data/color/svg/1F99C.svg"},
+    {name:"Penguin", type:"Bird", img:"https://openmoji.org/data/color/svg/1F427.svg"},
+    {name:"Rooster", type:"Bird", img:"https://openmoji.org/data/color/svg/1F413.svg"},
 
     /* Fish */
-    {name:"Fish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F41F.svg"},
-    {name:"Tropical Fish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F420.svg"},
-    {name:"Blowfish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F421.svg"},
-    {name:"Shark",type:"Fish",img:"https://openmoji.org/data/color/svg/1F988.svg"},
-    {name:"Whale",type:"Fish",img:"https://openmoji.org/data/color/svg/1F40B.svg"},
-    {name:"Dolphin",type:"Fish",img:"https://openmoji.org/data/color/svg/1F42C.svg"},
+    {name:"Fish", type:"Fish", img:"https://openmoji.org/data/color/svg/1F41F.svg"},
+    {name:"Tropical Fish", type:"Fish", img:"https://openmoji.org/data/color/svg/1F420.svg"},
+    {name:"Blowfish", type:"Fish", img:"https://openmoji.org/data/color/svg/1F421.svg"},
+    {name:"Shark", type:"Fish", img:"https://openmoji.org/data/color/svg/1F988.svg"},
+    {name:"Whale", type:"Fish", img:"https://openmoji.org/data/color/svg/1F40B.svg"},
+    {name:"Dolphin", type:"Fish", img:"https://openmoji.org/data/color/svg/1F42C.svg"},
 
-    /* Reptiles */
-    {name:"Snake",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F40D.svg"},
-    {name:"Turtle",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F422.svg"},
-    {name:"Crocodile",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F40A.svg"},
-    {name:"Lizard",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F98E.svg"},
-    {name:"Dragon",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F409.svg"},
-    {name:"T-Rex",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F996.svg"},
+    /* Reptiles — R3 */
+    {name:"Snake", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40D.svg"},
+    {name:"Lizard", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
+    {name:"Turtle", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F422.svg"},
+    {name:"Crocodile", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40A.svg"},
+    {name:"Alligator", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40A.svg"},
+    {name:"Iguana", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
 
-    /* Amphibians (fixed cartoon set) */
-    {name:"Frog",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Toad",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1FAB4.svg"},
-    {name:"Salamander",type:"Amphibian",img:"https://cdn.pixabay.com/photo/2016/03/31/20/51/salamander-1298741_1280.png"},
-    {name:"Newt",type:"Amphibian",img:"https://cdn.pixabay.com/photo/2020/07/22/09/20/newt-5429753_1280.png"},
-    {name:"Tree Frog",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Axolotl",type:"Amphibian",img:"https://cdn.pixabay.com/photo/2023/02/14/20/09/axolotl-7788785_1280.png"}
+    /* Amphibians — Fixed */
+    {name:"Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
+    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@14.0.0/color/svg/1FAB4.svg"},
+    {name:"Salamander", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2016/03/31/20/51/salamander-1298741_640.png"},
+    {name:"Newt", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2020/07/22/09/20/newt-5429753_640.png"},
+    {name:"Tree Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
+    {name:"Axolotl", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2023/02/14/20/09/axolotl-7788785_640.png"}
 ];
 
 let score = 0;
@@ -201,18 +205,23 @@ let streak = 0;
 let timeLeft = 60;
 let timer;
 let list = [];
+let current = null;
 
 function startGame() {
     score = 0;
     streak = 0;
     timeLeft = 60;
-    document.getElementById("timer").innerText = "Time Left: " + timeLeft;
-    updateScore();
+
+    // Hide placeholder + show real image
+    document.getElementById("placeholder").style.display = "none";
+    document.getElementById("animal-image").style.display = "block";
 
     list = [...animals];
     shuffle(list);
-    nextAnimal();
+
+    updateScore();
     startTimer();
+    nextAnimal();
 }
 
 function shuffle(a) {
@@ -235,10 +244,8 @@ function startTimer() {
 }
 
 function nextAnimal() {
-    if (list.length === 0) {
-        endGame();
-        return;
-    }
+    if (list.length === 0) { endGame(); return; }
+
     current = list.pop();
     document.getElementById("animal-image").src = current.img;
     document.getElementById("animal-name").innerText = current.name;
@@ -249,7 +256,6 @@ function updateScore() {
 }
 
 document.querySelectorAll(".category").forEach(cat => {
-
     cat.addEventListener("dragover", e => {
         e.preventDefault();
         cat.classList.add("highlight");
@@ -265,10 +271,8 @@ document.querySelectorAll(".category").forEach(cat => {
             streak++;
             document.getElementById("correct-sound").play();
 
-            if (streak === 3) {
-                score += 10;
-                streak = 0;
-            }
+            if (streak === 3) { score += 10; streak = 0; }
+
         } else {
             score -= 5;
             streak = 0;
@@ -278,7 +282,6 @@ document.querySelectorAll(".category").forEach(cat => {
         updateScore();
         nextAnimal();
     });
-
 });
 
 function endGame() {
