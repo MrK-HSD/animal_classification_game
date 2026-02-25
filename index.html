@@ -27,17 +27,18 @@
     #animal-card {
         margin: 25px auto;
         width: 280px;
+        height: 260px;  /* NEW: Fixes vertical centering */
         background: white;
         padding: 15px;
         border-radius: 12px;
         border: 2px solid #444;
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        
-        /* Center contents */
+
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        justify-content: center;  /* NEW */
+        align-items: center;      /* NEW */
+        text-align: center;
     }
 
     #animal-image {
@@ -52,13 +53,11 @@
         font-weight: 600;
     }
 
-    /* Placeholder */
     #placeholder {
         font-size: 48px;
         line-height: 1.4;
     }
 
-    /* Category boxes */
     #game-area {
         display: flex;
         justify-content: center;
@@ -129,16 +128,14 @@
 <div id="timer">Time Left: 60</div>
 <div id="scoreboard">Score: 0</div>
 
-<!-- Animal Card -->
 <div id="animal-card" draggable="true">
-    <!-- 6-animal placeholder -->
+    <!-- Placeholder -->
     <div id="placeholder">🦁 🐘 🐒<br>🐢 🐠 🐸</div>
 
     <img id="animal-image" src="" alt="Animal" style="display:none;">
     <p id="animal-name"></p>
 </div>
 
-<!-- Categories -->
 <div id="game-area">
     <div class="category mammal" data-type="Mammal">Mammals</div>
     <div class="category bird" data-type="Bird">Birds</div>
@@ -154,7 +151,7 @@
     <ol id="score-list"></ol>
 </div>
 
-<!-- Sound Effects -->
+<!-- Sounds -->
 <audio id="correct-sound">
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3">
 </audio>
@@ -163,8 +160,9 @@
 </audio>
 
 <script>
-/* FINAL 30 ANIMALS — cartoon images, fully CORS-safe */
+/* FINAL 30 ANIMALS — all images CORS-safe */
 const animals = [
+
     /* Mammals */
     {name:"Lion", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F981.svg"},
     {name:"Monkey", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F412.svg"},
@@ -189,7 +187,7 @@ const animals = [
     {name:"Whale", type:"Fish", img:"https://openmoji.org/data/color/svg/1F40B.svg"},
     {name:"Dolphin", type:"Fish", img:"https://openmoji.org/data/color/svg/1F42C.svg"},
 
-    /* Reptiles — R3 */
+    /* Reptiles */
     {name:"Snake", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40D.svg"},
     {name:"Lizard", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
     {name:"Turtle", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F422.svg"},
@@ -197,12 +195,12 @@ const animals = [
     {name:"Alligator", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40A.svg"},
     {name:"Iguana", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
 
-    /* Amphibians — Option A */
+    /* Amphibians (Option A w/ Tadpole=Frog) */
     {name:"Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Salamander", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F432.svg"},
-    {name:"Tadpole", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F432.svg"}, 
-    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/tomorrowchris/frog-icons/toad.png"},
-    {name:"Axolotl", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2023/02/14/20/09/axolotl-7788785_640.png"},
+    {name:"Salamander", type:"Amphibian", img:"https://cdn.jsdelivr.net/npm/openmoji@14.0.0/color/svg/E004.svg"},
+    {name:"Tadpole", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
+    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@14.0.0/color/svg/1FAB4.svg"},
+    {name:"Axolotl", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f9a5.svg"},
 ];
 
 let score = 0;
@@ -212,7 +210,6 @@ let timer;
 let list = [];
 let current = null;
 
-/* Start Game */
 function startGame() {
     score = 0;
     streak = 0;
@@ -261,6 +258,7 @@ function updateScore() {
 }
 
 document.querySelectorAll(".category").forEach(cat => {
+
     cat.addEventListener("dragover", e => {
         e.preventDefault();
         cat.classList.add("highlight");
