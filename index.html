@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Animal Classification Game</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: #eef6ff;
+        font-family: 'Poppins', sans-serif;
+        background: #f1f7ff;
         text-align: center;
         padding: 20px;
     }
 
+    h1 {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    #timer, #scoreboard {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    /* Game layout */
     #game-area {
         display: flex;
         justify-content: center;
@@ -21,57 +36,80 @@
     }
 
     .category {
-        border: 2px solid #333;
-        background: white;
         width: 180px;
-        height: 260px;
+        height: 240px;
         padding: 10px;
-        border-radius: 10px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease;
     }
 
-    .category h3 {
-        margin: 5px;
-        font-size: 18px;
+    .category:hover {
+        transform: scale(1.05);
     }
 
+    /* Theme colors */
+    .mammal { background: #4A90E2; }
+    .bird { background: #F5C542; color: black; }
+    .fish { background: #48C9B0; }
+    .reptile { background: #58D68D; }
+    .amphibian { background: #AF7AC5; }
+
+    /* Animal card */
     #animal-card {
-        margin-top: 20px;
-        padding: 10px;
-        width: 220px;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 10px;
+        margin: 25px auto;
+        width: 260px;
+        background: white;
+        padding: 12px;
+        border-radius: 12px;
         border: 2px solid #333;
-        background: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         cursor: grab;
+        transition: transform 0.15s ease;
     }
 
-    #animal-card img {
-        width: 200px;
-        height: 150px;
+    #animal-card:active {
+        transform: scale(1.03);
+    }
+
+    #animal-image {
+        width: 240px;
+        height: 160px;
+        border-radius: 10px;
         object-fit: cover;
-        border-radius: 8px;
     }
 
-    #scoreboard, #timer {
-        font-size: 22px;
-        margin-top: 10px;
-        font-weight: bold;
+    .highlight {
+        outline: 4px dashed white;
     }
 
     #leaderboard {
         margin-top: 30px;
-        background: #fff;
-        padding: 10px;
-        width: 320px;
+        background: white;
+        padding: 15px;
+        width: 350px;
         margin-left: auto;
         margin-right: auto;
         border-radius: 10px;
         border: 2px solid #333;
     }
 
-    .highlight {
-        border: 3px dashed green;
+    button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        background: #4A90E2;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #3a78c0;
     }
 </style>
 </head>
@@ -81,83 +119,129 @@
 <h1>Animal Classification Game</h1>
 <p>Drag the animal to the correct vertebrate class!</p>
 
-<div id="timer">Time Left: 45</div>
+<div id="timer">Time Left: 60</div>
 <div id="scoreboard">Score: 0</div>
 
+<!-- Animal Display Card -->
 <div id="animal-card" draggable="true">
-    <p>Click Start to Begin</p>
+    <img id="animal-image" src="" alt="Animal">
+    <p id="animal-name"></p>
 </div>
 
+<!-- Categories -->
 <div id="game-area">
-    <div class="category" data-type="Mammal"><h3>Mammals</h3></div>
-    <div class="category" data-type="Bird"><h3>Birds</h3></div>
-    <div class="category" data-type="Fish"><h3>Fish</h3></div>
-    <div class="category" data-type="Reptile"><h3>Reptiles</h3></div>
-    <div class="category" data-type="Amphibian"><h3>Amphibians</h3></div>
+    <div class="category mammal" data-type="Mammal">Mammals</div>
+    <div class="category bird" data-type="Bird">Birds</div>
+    <div class="category fish" data-type="Fish">Fish</div>
+    <div class="category reptile" data-type="Reptile">Reptiles</div>
+    <div class="category amphibian" data-type="Amphibian">Amphibians</div>
 </div>
 
-<br>
-<button onclick="startGame()">Start Game</button>
+<button onclick="startGame()">Play Again</button>
 
+<!-- Leaderboard -->
 <div id="leaderboard">
     <h3>Top Scores</h3>
     <ol id="score-list"></ol>
 </div>
 
+<!-- Sound Effects -->
+<audio id="correct-sound">
+    <source src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" type="audio/ogg">
+</audio>
+<audio id="incorrect-sound">
+    <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+</audio>
+
 <script>
 const animals = [
-    { name: "Lion", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg" },
-    { name: "Dog", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Collage_of_Nine_Dogs.jpg" },
-    { name: "Whale", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Humpback_Whale_underwater_shot.jpg" },
+    /* Mammals */
+    {name:"Lion", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg"},
+    {name:"Dog", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/3/32/Border_Collie_liver_portrait.jpg"},
+    {name:"Whale", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/5/5c/Humpback_Whale_underwater_shot.jpg"},
+    {name:"Elephant", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/3/37/African_Bush_Elephant.jpg"},
+    {name:"Horse", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/0/0c/2010-brown-horse.jpg"},
+    {name:"Giraffe", type:"Mammal", img:"https://upload.wikimedia.org/wikipedia/commons/9/9f/Giraffe_standing.jpg"},
 
-    { name: "Eagle", type: "Bird", img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Bald_Eagle_Portrait.jpg" },
-    { name: "Penguin", type: "Bird", img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Emperor_Penguin_Manchot_empereur.jpg" },
+    /* Birds */
+    {name:"Eagle", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/1/15/Bald_Eagle_Portrait.jpg"},
+    {name:"Penguin", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/0/0b/Emperor_Penguin_Manchot_empereur.jpg"},
+    {name:"Owl", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Northern_Saw-whet_Owl.jpg"},
+    {name:"Flamingo", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/8/87/Flamingo_Lagoon.jpg"},
+    {name:"Parrot", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/7/7b/Ara_macao_qtl1.jpg"},
+    {name:"Duck", type:"Bird", img:"https://upload.wikimedia.org/wikipedia/commons/4/41/Mallard2.jpg"},
 
-    { name: "Salmon", type: "Fish", img: "https://upload.wikimedia.org/wikipedia/commons/0/09/Atlantic_Salmon.jpg" },
-    { name: "Shark", type: "Fish", img: "https://upload.wikimedia.org/wikipedia/commons/5/56/White_shark.jpg" },
+    /* Fish */
+    {name:"Salmon", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/0/09/Atlantic_Salmon.jpg"},
+    {name:"Shark", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/5/56/White_shark.jpg"},
+    {name:"Clownfish", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Amphiprion_ocellaris_%28Clown_anemonefish%29.jpg"},
+    {name:"Tuna", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Thunnus_albacares.png"},
+    {name:"Seahorse", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/8/8f/Hippocampus_spinosissimus.jpg"},
+    {name:"Goldfish", type:"Fish", img:"https://upload.wikimedia.org/wikipedia/commons/2/23/Goldfish3.jpg"},
 
-    { name: "Snake", type: "Reptile", img: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Coiled_Up_Snake.jpg" },
-    { name: "Lizard", type: "Reptile", img: "https://upload.wikimedia.org/wikipedia/commons/5/52/Green_Anole.jpg" },
+    /* Reptiles */
+    {name:"Snake", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Coiled_Up_Snake.jpg"},
+    {name:"Lizard", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/5/52/Green_Anole.jpg"},
+    {name:"Turtle", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/3/32/Turtle3.jpg"},
+    {name:"Crocodile", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/7/76/Crocodile_in_water.png"},
+    {name:"Chameleon", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/7/7f/Chamaeleo_calyptratus_-_female.JPG"},
+    {name:"Gecko", type:"Reptile", img:"https://upload.wikimedia.org/wikipedia/commons/3/3c/Gold_dust_day_gecko.jpg"},
 
-    { name: "Frog", type: "Amphibian", img: "https://upload.wikimedia.org/wikipedia/commons/8/88/Frog_on_palm_frond.jpg" },
-    { name: "Toad", type: "Amphibian", img: "https://upload.wikimedia.org/wikipedia/commons/1/19/American_Toad.jpg" }
+    /* Amphibians */
+    {name:"Frog", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/8/88/Frog_on_palm_frond.jpg"},
+    {name:"Toad", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/1/19/American_Toad.jpg"},
+    {name:"Salamander", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/2/2d/Salamander.jpg"},
+    {name:"Newt", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/8/8d/Triturus_marmoratus_PCCB_20040815.jpg"},
+    {name:"Tree Frog", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Hyla_cinerea2.jpg"},
+    {name:"Axolotl", type:"Amphibian", img:"https://upload.wikimedia.org/wikipedia/commons/7/70/Axolotl_negative.jpg"}
 ];
 
+let currentList = [];
 let score = 0;
 let streak = 0;
-let currentAnimal = null;
-let timeLeft = 45;
-let timerInterval = null;
+let timeLeft = 60;
+let timer;
+let currentAnimal;
 
 function startGame() {
     score = 0;
     streak = 0;
-    timeLeft = 45;
+    timeLeft = 60;
+    currentList =([...animals]);
+    shuffle(currentList);
     updateScore();
     startTimer();
     nextAnimal();
 }
 
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
 function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
+    clearInterval(timer);
+    timer = setInterval(() => {
         timeLeft--;
         document.getElementById("timer").innerText = "Time Left: " + timeLeft;
-
         if (timeLeft <= 0) {
-            clearInterval(timerInterval);
+            clearInterval(timer);
             endGame();
         }
     }, 1000);
 }
 
 function nextAnimal() {
-    currentAnimal = animals[Math.floor(Math.random() * animals.length)];
+    if (currentList.length === 0) {
+        endGame();
+        return;
+    }
 
-    document.getElementById("animal-card").innerHTML = `
-        <img src="${currentAnimal.img}" alt="${currentAnimal.name}">
-        <p>${currentAnimal.name}</p>
-    `;
+    currentAnimal = currentList.pop();
+    document.getElementById("animal-image").src = currentAnimal.img;
+    document.getElementById("animal-name").innerText = currentAnimal.name;
 }
 
 function updateScore() {
@@ -165,8 +249,9 @@ function updateScore() {
 }
 
 document.querySelectorAll(".category").forEach(cat => {
-    cat.addEventListener("dragover", event => {
-        event.preventDefault();
+
+    cat.addEventListener("dragover", e => {
+        e.preventDefault();
         cat.classList.add("highlight");
     });
 
@@ -180,13 +265,15 @@ document.querySelectorAll(".category").forEach(cat => {
         if (cat.dataset.type === currentAnimal.type) {
             score += 10;
             streak++;
+            document.getElementById("correct-sound").play();
             if (streak === 3) {
-                score += 10; 
+                score += 10;
                 streak = 0;
             }
         } else {
             score -= 5;
             streak = 0;
+            document.getElementById("incorrect-sound").play();
         }
 
         updateScore();
@@ -202,7 +289,7 @@ function endGame() {
 
 function saveScore(name, score) {
     let scores = JSON.parse(localStorage.getItem("animalScores") || "[]");
-    scores.push({ name, score });
+    scores.push({name, score});
     scores.sort((a, b) => b.score - a.score);
     scores = scores.slice(0, 10);
     localStorage.setItem("animalScores", JSON.stringify(scores));
@@ -223,6 +310,5 @@ function loadScores() {
 
 loadScores();
 </script>
-
 </body>
 </html>
