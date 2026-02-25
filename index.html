@@ -17,13 +17,36 @@
 
     h1 {
         font-size: 32px;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
     #timer, #scoreboard {
         font-size: 22px;
         font-weight: bold;
         margin: 10px 0;
+    }
+
+    #animal-card {
+        margin: 25px auto;
+        width: 260px;
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #444;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        cursor: grab;
+    }
+
+    #animal-image {
+        width: 160px;
+        height: 160px;
+        object-fit: contain;
+        margin-bottom: 8px;
+    }
+
+    #animal-name {
+        font-size: 20px;
+        font-weight: 600;
     }
 
     #game-area {
@@ -58,39 +81,9 @@
     .reptile { background: #58D68D; }
     .amphibian { background: #AF7AC5; }
 
-    /* Animal card */
-    #animal-card {
-        margin: 25px auto;
-        width: 260px;
-        background: white;
-        padding: 12px;
-        border-radius: 12px;
-        border: 2px solid #333;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        cursor: grab;
-    }
-
-    #animal-image {
-        width: 220px;
-        height: 160px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
     .highlight {
         outline: 4px dashed white;
         transform: scale(1.1);
-    }
-
-    #leaderboard {
-        margin-top: 30px;
-        background: white;
-        padding: 15px;
-        width: 350px;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 10px;
-        border: 2px solid #333;
     }
 
     button {
@@ -107,6 +100,17 @@
 
     button:hover {
         background: #3a78c0;
+    }
+
+    #leaderboard {
+        margin-top: 30px;
+        background: white;
+        padding: 15px;
+        width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        border: 2px solid #333;
     }
 </style>
 </head>
@@ -139,7 +143,7 @@
     <ol id="score-list"></ol>
 </div>
 
-<!-- Soft sound effects -->
+<!-- Soft classroom-friendly sound effects -->
 <audio id="correct-sound">
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3?filename=correct-2-46134.mp3" type="audio/mpeg">
 </audio>
@@ -147,48 +151,49 @@
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_62154420cc.mp3?filename=error-126627.mp3" type="audio/mpeg">
 </audio>
 
+
 <script>
-/* 30 Animals — Realistic Wildlife Action Photos (all CORS-safe) */
+/* 30 Cartoon Animals (Color SVGs from OpenMoji CDN) */
 const animals = [
     /* Mammals */
-    {name:"Lion",type:"Mammal",img:"https://images.unsplash.com/photo-1597781355378-59ddc72fd210?auto=format&w=800"},
-    {name:"Wolf",type:"Mammal",img:"https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&w=800"},
-    {name:"Elephant",type:"Mammal",img:"https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&w=800"},
-    {name:"Zebra",type:"Mammal",img:"https://images.unsplash.com/photo-1501706362039-c06b2d715385?auto=format&w=800"},
-    {name:"Giraffe",type:"Mammal",img:"https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&w=800"},
-    {name:"Monkey",type:"Mammal",img:"https://images.unsplash.com/photo-1552410260-44f37e07cc99?auto=format&w=800"},
+    {name:"Lion",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F981.svg"},
+    {name:"Monkey",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F412.svg"},
+    {name:"Elephant",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F418.svg"},
+    {name:"Giraffe",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F992.svg"},
+    {name:"Dog",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F415.svg"},
+    {name:"Horse",type:"Mammal",img:"https://openmoji.org/data/color/svg/1F434.svg"},
 
     /* Birds */
-    {name:"Eagle",type:"Bird",img:"https://images.unsplash.com/photo-1508264165352-258db2f37ccb?auto=format&w=800"},
-    {name:"Owl",type:"Bird",img:"https://images.unsplash.com/photo-1501700971155-7ea7a5ea90f4?auto=format&w=800"},
-    {name:"Flamingo",type:"Bird",img:"https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&w=800"},
-    {name:"Parrot",type:"Bird",img:"https://images.unsplash.com/photo-1579165466741-7f8b1d0bcd2b?auto=format&w=800"},
-    {name:"Swan",type:"Bird",img:"https://images.unsplash.com/photo-1470115636492-6d2b56f9146f?auto=format&w=800"},
-    {name:"Penguin",type:"Bird",img:"https://images.unsplash.com/photo-1504653606923-0fdbe9f0dda7?auto=format&w=800"},
+    {name:"Eagle",type:"Bird",img:"https://openmoji.org/data/color/svg/1F985.svg"},
+    {name:"Owl",type:"Bird",img:"https://openmoji.org/data/color/svg/1F989.svg"},
+    {name:"Duck",type:"Bird",img:"https://openmoji.org/data/color/svg/1F986.svg"},
+    {name:"Parrot",type:"Bird",img:"https://openmoji.org/data/color/svg/1F99C.svg"},
+    {name:"Penguin",type:"Bird",img:"https://openmoji.org/data/color/svg/1F427.svg"},
+    {name:"Rooster",type:"Bird",img:"https://openmoji.org/data/color/svg/1F413.svg"},
 
     /* Fish */
-    {name:"Shark",type:"Fish",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&w=800"},
-    {name:"Clownfish",type:"Fish",img:"https://images.unsplash.com/photo-1588643261419-dc4491ee46ca?auto=format&w=800"},
-    {name:"Goldfish",type:"Fish",img:"https://images.unsplash.com/photo-1544551763-8dd44758c8e7?auto=format&w=800"},
-    {name:"Tuna",type:"Fish",img:"https://images.pexels.com/photos/128756/pexels-photo-128756.jpeg?auto=compress&cs=tinysrgb&w=800"},
-    {name:"Salmon",type:"Fish",img:"https://images.unsplash.com/photo-1558980664-10ea2926d1f6?auto=format&w=800"},
-    {name:"Seahorse",type:"Fish",img:"https://images.unsplash.com/photo-1589544822052-5aa72cb2f70b?auto=format&w=800"},
+    {name:"Fish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F41F.svg"},
+    {name:"Tropical Fish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F420.svg"},
+    {name:"Blowfish",type:"Fish",img:"https://openmoji.org/data/color/svg/1F421.svg"},
+    {name:"Shark",type:"Fish",img:"https://openmoji.org/data/color/svg/1F988.svg"},
+    {name:"Whale",type:"Fish",img:"https://openmoji.org/data/color/svg/1F40B.svg"},
+    {name:"Dolphin",type:"Fish",img:"https://openmoji.org/data/color/svg/1F42C.svg"},
 
     /* Reptiles */
-    {name:"Snake",type:"Reptile",img:"https://images.unsplash.com/photo-1508182311256-e3f7d57b5c6d?auto=format&w=800"},
-    {name:"Lizard",type:"Reptile",img:"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&w=800"},
-    {name:"Crocodile",type:"Reptile",img:"https://images.unsplash.com/photo-1500315331616-db2e89b6df93?auto=format&w=800"},
-    {name:"Turtle",type:"Reptile",img:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&w=800"},
-    {name:"Gecko",type:"Reptile",img:"https://images.unsplash.com/photo-1601758173924-19698bbb2f84?auto=format&w=800"},
-    {name:"Chameleon",type:"Reptile",img:"https://images.unsplash.com/photo-1516571137133-1be29e36d95b?auto=format&w=800"},
+    {name:"Snake",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F40D.svg"},
+    {name:"Turtle",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F422.svg"},
+    {name:"Crocodile",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F40A.svg"},
+    {name:"Lizard",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F98E.svg"},
+    {name:"Dragon",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F409.svg"},
+    {name:"T-Rex",type:"Reptile",img:"https://openmoji.org/data/color/svg/1F996.svg"},
 
     /* Amphibians */
-    {name:"Frog",type:"Amphibian",img:"https://images.unsplash.com/photo-1552653722-c8f307a2fb46?auto=format&w=800"},
-    {name:"Toad",type:"Amphibian",img:"https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&w=800"},
-    {name:"Salamander",type:"Amphibian",img:"https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&w=800"},
-    {name:"Newt",type:"Amphibian",img:"https://images.unsplash.com/photo-1590157276213-64d99b5fc551?auto=format&w=800"},
-    {name:"Tree Frog",type:"Amphibian",img:"https://images.unsplash.com/photo-1524704654690-b56c05c78bd7?auto=format&w=800"},
-    {name:"Axolotl",type:"Amphibian",img:"https://images.unsplash.com/photo-1610384911419-861b94f179f1?auto=format&w=800"}
+    {name:"Frog",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F438.svg"},
+    {name:"Toad",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1FAB4.svg"},
+    {name:"Salamander",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F40A.svg"},
+    {name:"Newt",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F41E.svg"},
+    {name:"Tree Frog",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F438.svg"},
+    {name:"Axolotl",type:"Amphibian",img:"https://openmoji.org/data/color/svg/1F9A5.svg"}
 ];
 
 let score = 0;
@@ -234,7 +239,6 @@ function nextAnimal() {
         endGame();
         return;
     }
-
     current = list.pop();
     document.getElementById("animal-image").src = current.img;
     document.getElementById("animal-name").innerText = current.name;
@@ -246,8 +250,8 @@ function updateScore() {
 
 document.querySelectorAll(".category").forEach(cat => {
 
-    cat.addEventListener("dragover", event => {
-        event.preventDefault();
+    cat.addEventListener("dragover", e => {
+        e.preventDefault();
         cat.classList.add("highlight");
     });
 
