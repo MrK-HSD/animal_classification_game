@@ -32,6 +32,12 @@
         border-radius: 12px;
         border: 2px solid #444;
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        
+        /* Center contents */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
     #animal-image {
@@ -46,6 +52,13 @@
         font-weight: 600;
     }
 
+    /* Placeholder */
+    #placeholder {
+        font-size: 48px;
+        line-height: 1.4;
+    }
+
+    /* Category boxes */
     #game-area {
         display: flex;
         justify-content: center;
@@ -105,12 +118,6 @@
         border-radius: 10px;
         border: 2px solid #333;
     }
-
-    /* Placeholder collage */
-    #placeholder {
-        font-size: 48px;
-        line-height: 1.4;
-    }
 </style>
 </head>
 
@@ -124,10 +131,9 @@
 
 <!-- Animal Card -->
 <div id="animal-card" draggable="true">
-    <!-- Placeholder collage (6 cute animals) -->
+    <!-- 6-animal placeholder -->
     <div id="placeholder">🦁 🐘 🐒<br>🐢 🐠 🐸</div>
 
-    <!-- Real game image -->
     <img id="animal-image" src="" alt="Animal" style="display:none;">
     <p id="animal-name"></p>
 </div>
@@ -148,16 +154,16 @@
     <ol id="score-list"></ol>
 </div>
 
-<!-- Soft sounds -->
+<!-- Sound Effects -->
 <audio id="correct-sound">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3?filename=correct-2-46134.mp3">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f5a0e9a61b.mp3">
 </audio>
 <audio id="incorrect-sound">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_62154420cc.mp3?filename=error-126627.mp3">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_62154420cc.mp3">
 </audio>
 
 <script>
-/* 30 animals — cartoon, kid-friendly, CORS-safe */
+/* FINAL 30 ANIMALS — cartoon images, fully CORS-safe */
 const animals = [
     /* Mammals */
     {name:"Lion", type:"Mammal", img:"https://openmoji.org/data/color/svg/1F981.svg"},
@@ -191,13 +197,12 @@ const animals = [
     {name:"Alligator", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40A.svg"},
     {name:"Iguana", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
 
-    /* Amphibians — Fixed */
+    /* Amphibians — Option A */
     {name:"Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@14.0.0/color/svg/1FAB4.svg"},
-    {name:"Salamander", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2016/03/31/20/51/salamander-1298741_640.png"},
-    {name:"Newt", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2020/07/22/09/20/newt-5429753_640.png"},
-    {name:"Tree Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Axolotl", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2023/02/14/20/09/axolotl-7788785_640.png"}
+    {name:"Salamander", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F432.svg"},
+    {name:"Tadpole", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F432.svg"}, 
+    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/tomorrowchris/frog-icons/toad.png"},
+    {name:"Axolotl", type:"Amphibian", img:"https://cdn.pixabay.com/photo/2023/02/14/20/09/axolotl-7788785_640.png"},
 ];
 
 let score = 0;
@@ -207,12 +212,12 @@ let timer;
 let list = [];
 let current = null;
 
+/* Start Game */
 function startGame() {
     score = 0;
     streak = 0;
     timeLeft = 60;
 
-    // Hide placeholder + show real image
     document.getElementById("placeholder").style.display = "none";
     document.getElementById("animal-image").style.display = "block";
 
