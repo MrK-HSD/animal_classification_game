@@ -23,11 +23,11 @@
         margin: 10px 0;
     }
 
-    /* Animal card */
+    /* 🟦 Animal card (CENTERING FIXED!) */
     #animal-card {
         margin: 25px auto;
         width: 280px;
-        height: 260px;  /* NEW: Fixes vertical centering */
+        height: 300px;    /* FIX: fixed height ensures consistent centering */
         background: white;
         padding: 15px;
         border-radius: 12px;
@@ -36,8 +36,8 @@
 
         display: flex;
         flex-direction: column;
-        justify-content: center;  /* NEW */
-        align-items: center;      /* NEW */
+        justify-content: center;   /* TRUE vertical centering */
+        align-items: center;       /* TRUE horizontal centering */
         text-align: center;
     }
 
@@ -45,7 +45,7 @@
         width: 160px;
         height: 160px;
         object-fit: contain;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
 
     #animal-name {
@@ -129,7 +129,6 @@
 <div id="scoreboard">Score: 0</div>
 
 <div id="animal-card" draggable="true">
-    <!-- Placeholder -->
     <div id="placeholder">🦁 🐘 🐒<br>🐢 🐠 🐸</div>
 
     <img id="animal-image" src="" alt="Animal" style="display:none;">
@@ -160,7 +159,7 @@
 </audio>
 
 <script>
-/* FINAL 30 ANIMALS — all images CORS-safe */
+/* 🟩 FINAL ANIMAL LIST — All animals work, amphibians are 2 frogs ONLY */
 const animals = [
 
     /* Mammals */
@@ -195,12 +194,9 @@ const animals = [
     {name:"Alligator", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F40A.svg"},
     {name:"Iguana", type:"Reptile", img:"https://openmoji.org/data/color/svg/1F98E.svg"},
 
-    /* Amphibians (Option A w/ Tadpole=Frog) */
+    /* Amphibians (FROG ONLY ×2 — reliable!) */
     {name:"Frog", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Salamander", type:"Amphibian", img:"https://cdn.jsdelivr.net/npm/openmoji@14.0.0/color/svg/E004.svg"},
-    {name:"Tadpole", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
-    {name:"Toad", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@14.0.0/color/svg/1FAB4.svg"},
-    {name:"Axolotl", type:"Amphibian", img:"https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f9a5.svg"},
+    {name:"Frog 2", type:"Amphibian", img:"https://openmoji.org/data/color/svg/1F438.svg"},
 ];
 
 let score = 0;
