@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Animal Classification Game</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef6ff;
+        text-align: center;
+        padding: 20px;
+    }
+
+    #game-area {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .category {
+        border: 2px solid #333;
+        background: white;
+        width: 180px;
+        height: 260px;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .category h3 {
+        margin: 5px;
+        font-size: 18px;
+    }
+
+    #animal-card {
+        margin-top: 20px;
+        padding: 10px;
+        width: 220px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        border: 2px solid #333;
+        background: #fff;
+        cursor: grab;
+    }
+
+    #animal-card img {
+        width: 200px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    #scoreboard, #timer {
+        font-size: 22px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    #leaderboard {
+        margin-top: 30px;
+        background: #fff;
+        padding: 10px;
+        width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        border: 2px solid #333;
+    }
+
+    .highlight {
+        border: 3px dashed green;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Animal Classification Game</h1>
+<p>Drag the animal to the correct vertebrate class!</p>
+
+<div id="timer">Time Left: 45</div>
+<div id="scoreboard">Score: 0</div>
+
+<div id="animal-card" draggable="true">
+    <p>Click Start to Begin</p>
+</div>
+
+<div id="game-area">
+    <div class="category" data-type="Mammal"><h3>Mammals</h3></div>
+    <div class="category" data-type="Bird"><h3>Birds</h3></div>
+    <div class="category" data-type="Fish"><h3>Fish</h3></div>
+    <div class="category" data-type="Reptile"><h3>Reptiles</h3></div>
+    <div class="category" data-type="Amphibian"><h3>Amphibians</h3></div>
+</div>
+
+<br>
+<button onclick="startGame()">Start Game</button>
+
+<div id="leaderboard">
+    <h3>Top Scores</h3>
+    <ol id="score-list"></ol>
+</div>
+
+<script>
+const animals = [
+    { name: "Lion", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg" },
+    { name: "Dog", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Collage_of_Nine_Dogs.jpg" },
+    { name: "Whale", type: "Mammal", img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Humpback_Whale_underwater_shot.jpg" },
+
+    { name: "Eagle", type: "Bird", img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Bald_Eagle_Portrait.jpg" },
+    { name: "Penguin", type: "Bird", img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Emperor_Penguin_Manchot_empereur.jpg" },
+
+    { name: "Salmon", type: "Fish", img: "https://upload.wikimedia.org/wikipedia/commons/0/09/Atlantic_Salmon.jpg" },
+    { name: "Shark", type: "Fish", img: "https://upload.wikimedia.org/wikipedia/commons/5/56/White_shark.jpg" },
+
+    { name: "Snake", type: "Reptile", img: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Coiled_Up_Snake.jpg" },
+    { name: "Lizard", type: "Reptile", img: "https://upload.wikimedia.org/wikipedia/commons/5/52/Green_Anole.jpg" },
+
+    { name: "Frog", type: "Amphibian", img: "https://upload.wikimedia.org/wikipedia/commons/8/88/Frog_on_palm_frond.jpg" },
+    { name: "Toad", type: "Amphibian", img: "https://upload.wikimedia.org/wikipedia/commons/1/19/American_Toad.jpg" }
+];
+
+let score = 0;
+let streak = 0;
+let currentAnimal = null;
+let timeLeft = 45;
+let timerInterval = null;
+
+function startGame() {
+    score = 0;
+    streak = 0;
+    timeLeft = 45;
+    updateScore();
+    startTimer();
+    nextAnimal();
+}
+
+function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = "Time Left: " + timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }, 1000);
+}
+
+function nextAnimal() {
+    currentAnimal = animals[Math.floor(Math.random() * animals.length)];
+
+    document.getElementById("animal-card").innerHTML = `
+        <img src="${currentAnimal.img}" alt="${currentAnimal.name}">
+        <p>${currentAnimal.name}</p>
+    `;
+}
+
+function updateScore() {
+    document.getElementById("scoreboard").innerText = "Score: " + score;
+}
+
+document.querySelectorAll(".category").forEach(cat => {
+    cat.addEventListener("dragover", event => {
+        event.preventDefault();
+        cat.classList.add("highlight");
+    });
+
+    cat.addEventListener("dragleave", () => cat.classList.remove("highlight"));
+
+    cat.addEventListener("drop", () => {
+        cat.classList.remove("highlight");
+
+        if (!currentAnimal) return;
+
+        if (cat.dataset.type === currentAnimal.type) {
+            score += 10;
+            streak++;
+            if (streak === 3) {
+                score += 10; 
+                streak = 0;
+            }
+        } else {
+            score -= 5;
+            streak = 0;
+        }
+
+        updateScore();
+        nextAnimal();
+    });
+});
+
+function endGame() {
+    const name = prompt("Time's up! Enter your name for the leaderboard:");
+    if (name) saveScore(name, score);
+    alert("Game Over! Final Score: " + score);
+}
+
+function saveScore(name, score) {
+    let scores = JSON.parse(localStorage.getItem("animalScores") || "[]");
+    scores.push({ name, score });
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 10);
+    localStorage.setItem("animalScores", JSON.stringify(scores));
+    loadScores();
+}
+
+function loadScores() {
+    const list = document.getElementById("score-list");
+    list.innerHTML = "";
+
+    const scores = JSON.parse(localStorage.getItem("animalScores") || "[]");
+    scores.forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = `${s.name} — ${s.score}`;
+        list.appendChild(li);
+    });
+}
+
+loadScores();
+</script>
+
+</body>
+</html>
